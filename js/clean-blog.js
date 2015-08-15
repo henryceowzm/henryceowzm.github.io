@@ -32,11 +32,10 @@ $(function() {
             }
             $.ajax({
                 url: "//formspree.io/henryceowzm@gmail.com",
-                type: "POST",
+                method: "POST",
                 data: {
                     name: name,
-                    phone: phone,
-                    email: email,
+                    _replyto: email,
                     message: message
                 },
                 cache: false,
