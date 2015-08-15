@@ -35,9 +35,10 @@ $(function() {
                 method: "POST",
                 data: {
                     name: name,
-                    _replyto: email,
+                    email: email,
                     message: message
                 },
+				dataType: "json",
                 cache: false,
                 success: function(data) {
                     // Success message
