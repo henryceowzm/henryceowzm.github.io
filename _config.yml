@@ -5,9 +5,9 @@ email: henrywanceo@gmail.com
 description: "Write your site description here. It will be used as your sites meta description as well!"
 #baseurl: "/startbootstrap-clean-blog-jekyll"
 url: "http://yourdomain.com"
-twitter_username: SBootstrap
+twitter_username: henryceowzm
 github_username:  henryceowzm
-facebook_username:  IronSummitMedia
+facebook_username:  henryceowzm
 
 # Build settings
 markdown: kramdown
