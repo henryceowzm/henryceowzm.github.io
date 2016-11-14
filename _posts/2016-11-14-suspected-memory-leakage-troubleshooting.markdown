@@ -69,29 +69,29 @@ header-img: "img/post-bg-05.jpg"
 <h2 class="section-heading">How to enable java.util.logging.Logger</h2>
 
 <p>By default, java.util.logging.Logger would use jre/lib/logging.properties as the configuration file, which can also be changed via -Djava.util.logging.config.file=path</p>
-<blockquote>
+{% highlight text %}
 [root@testlab ~]# ps -ef | grep 'keyword' | grep 'java.util.logging.config.file' --color
 user   48908     1  3 05:24 ?        00:07:28 /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java -server ... -Djava.util.logging.config.file=/opt/xx/conf/logging.properties -Dsun.net.httpserver.debug=true -Dsun.net.httpserver.maxReqTime=60 -Dsun.net.httpserver.maxRspTime=60
-</blockquote>
+{% endhighlight %}
 <p>Edit /opt/xx/conf/logging.properties to add FileHandler</p>
-<blockquote>
+{% highlight text %}
 handlers=java.util.logging.FileHandler
 com.sun.net.httpserver.level = FINEST
 java.util.logging.FileHandler.pattern = /var/log/xx/henry-%g.log
 java.util.logging.FileHandler.limit = 50000
 java.util.logging.FileHandler.count = 1
 java.util.logging.FileHandler.formatter = java.util.logging.SimpleFormatter
-</blockquote>
+{% endhighlight %}
 
 <p>Restart service and check log</p>
-<blockquote>
+{% highlight text %}
 [root@testlab ~]# tail -n 5 /var/log/xx/henry-0.log
 FINE: GET /NotificationSender/NotificationSenderService?wsdl=1 HTTP/1.1 [200  OK] ()
 Nov 11, 2016 8:46:38 AM sun.net.httpserver.ServerImpl$ServerTimerTask1 run
 FINE: closing: no response: java.nio.channels.SocketChannel[closed]
 Nov 11, 2016 8:46:38 AM sun.net.httpserver.ServerImpl$ServerTimerTask1 run
 FINE: closing: no response: java.nio.channels.SocketChannel[closed]
-</blockquote>
+{% endhighlight %}
 
 <h2 class="section-heading">Memory footprint before vs after tuning</h2>
 <p>Before</p>
@@ -114,7 +114,7 @@ FINE: closing: no response: java.nio.channels.SocketChannel[closed]
 <h2 class="section-heading">Take away</h2>
 <p>When interoperating with outside system, timeout and retry mechanism should be implemented (or at least be taken into consideration) on the client side.</p>
 <p>When providing webservice via jdk’s build-in @WebService, parameters can be tuned were listed below. The red one should/must be tuned.</p>
-<blockquote>
+{% highlight text %}
 sun.net.httpserver.idleInterval
 sun.net.httpserver.clockTick
 sun.net.httpserver.maxIdleConnections
@@ -125,6 +125,6 @@ sun.net.httpserver.maxRspTime
 sun.net.httpserver.timerMillis
 sun.net.httpserver.debug
 sun.net.httpserver.nodelay
-</blockquote>
+{% endhighlight %}
 
 <p>This is effective to jdk1.8, parameters may change as jdk evolve.</p>
