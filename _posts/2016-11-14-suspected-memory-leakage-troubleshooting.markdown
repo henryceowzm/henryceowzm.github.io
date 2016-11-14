@@ -74,8 +74,8 @@ header-img: "img/post-bg-05.jpg"
 user   48908     1  3 05:24 ?        00:07:28 /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java -server ... -Djava.util.logging.config.file=/opt/xx/conf/logging.properties -Dsun.net.httpserver.debug=true -Dsun.net.httpserver.maxReqTime=60 -Dsun.net.httpserver.maxRspTime=60
 {% endhighlight %}
 <p>Edit /opt/xx/conf/logging.properties to add FileHandler</p>
-{% highlight text %}
-handlers=java.util.logging.FileHandler
+{% highlight java %}
+handlers = java.util.logging.FileHandler
 com.sun.net.httpserver.level = FINEST
 java.util.logging.FileHandler.pattern = /var/log/xx/henry-%g.log
 java.util.logging.FileHandler.limit = 50000
@@ -114,7 +114,7 @@ FINE: closing: no response: java.nio.channels.SocketChannel[closed]
 <h2 class="section-heading">Take away</h2>
 <p>When interoperating with outside system, timeout and retry mechanism should be implemented (or at least be taken into consideration) on the client side.</p>
 <p>When providing webservice via jdk’s build-in @WebService, parameters can be tuned were listed below. The red one should/must be tuned.</p>
-{% highlight text %}
+{% highlight java %}
 sun.net.httpserver.idleInterval
 sun.net.httpserver.clockTick
 sun.net.httpserver.maxIdleConnections
