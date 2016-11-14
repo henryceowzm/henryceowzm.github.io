@@ -84,8 +84,8 @@ java.util.logging.FileHandler.formatter = java.util.logging.SimpleFormatter
 </blockquote>
 
 <p>Restart service and check log</p>
-[root@testlab ~]# tail -n 5 /var/log/xx/henry-0.log
 <blockquote>
+[root@testlab ~]# tail -n 5 /var/log/xx/henry-0.log
 FINE: GET /NotificationSender/NotificationSenderService?wsdl=1 HTTP/1.1 [200  OK] ()
 Nov 11, 2016 8:46:38 AM sun.net.httpserver.ServerImpl$ServerTimerTask1 run
 FINE: closing: no response: java.nio.channels.SocketChannel[closed]
