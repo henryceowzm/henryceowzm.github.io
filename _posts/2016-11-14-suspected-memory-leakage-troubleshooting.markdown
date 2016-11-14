@@ -68,11 +68,11 @@ header-img: "img/post-bg-05.jpg"
 
 <h2 class="section-heading">How to enable java.util.logging.Logger</h2>
 
-<p>By default, java.util.logging.Logger would use jre/lib/logging.properties as the configuration file, which can also be changed via -Djava.util.logging.config.file=<path></p>
-
+<p>By default, java.util.logging.Logger would use jre/lib/logging.properties as the configuration file, which can also be changed via -Djava.util.logging.config.file=path</p>
+<blockquote>
 [root@testlab ~]# ps -ef | grep 'keyword' | grep 'java.util.logging.config.file' --color
 user   48908     1  3 05:24 ?        00:07:28 /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java -server ... -Djava.util.logging.config.file=/opt/xx/conf/logging.properties -Dsun.net.httpserver.debug=true -Dsun.net.httpserver.maxReqTime=60 -Dsun.net.httpserver.maxRspTime=60
-
+</blockquote>
 <p>Edit /opt/xx/conf/logging.properties to add FileHandler</p>
 <blockquote>
 handlers=java.util.logging.FileHandler
