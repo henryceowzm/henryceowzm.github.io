@@ -29,27 +29,96 @@ header-img: "img/post-bg-05.jpg"
     <img src="{{ site.baseurl }}/img/suspected-memory-leakage/suspected-memory-leakage-2.png" alt="suspected memory leakage">
 </a>
 
-<p>So, the problem should between X and Y. A litter backgroud here: X provides a webservice interface to Y which will be used to send data to X.</p>
+<p>So, the problem should between X and Y.</p>
+<p>A litter backgroud here: X provides a webservice interface to Y which will be used to send data to X.</p>
 
 <h2 class="section-heading">At the crossroad</h2>
 
 <p>Sometimes, even google can’t lead you to a solution of a problem. So start reading the source code related to these parts.</p>
 
-<blockquote>The dreams of yesterday are the hopes of today and the reality of tomorrow. Science has not yet mastered prophecy. We predict too much for the next year and yet far too little for the next ten.</blockquote>
+<p><a href="http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/8u40-b25/sun/net/httpserver/ServerImpl.java#ServerImpl.ServerTimerTask1">ServerImpl</a></p>
 
-<p>Spaceflights cannot be stopped. This is not the work of any one man or even a group of men. It is a historical process which mankind is carrying out in accordance with the natural laws of human development.</p>
+<p><a href="http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/8u40-b25/sun/net/httpserver/ExchangeImpl.java#ExchangeImpl">ExchangeImpl</a></p>
 
-<h2 class="section-heading">Reaching for the Stars</h2>
+<p><a href="http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/8u40-b25/sun/net/httpserver/Request.java#Request">Request</a></p>
 
-<p>As we got further and further away, it [the Earth] diminished in size. Finally it shrank to the size of a marble, the most beautiful you can imagine. That beautiful, warm, living object looked so fragile, so delicate, that if you touched it with a finger it would crumble and fall apart. Seeing this has to change a man.</p>
+<p><a href="http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/8u40-b25/sun/net/httpserver/HttpConnection.java#HttpConnection">HttpConnection</a></p>
+
+<p><a href="http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/8u40-b25/sun/net/httpserver/ServerConfig.java#ServerConfig.0DEFAULT_TIMER_MILLIS">ServerConfig</a></p>
+
+<p>After checking code, I listed here the most important part:</p>
 
 <a href="#">
-    <img src="{{ site.baseurl }}/img/post-sample-image.jpg" alt="Post Sample Image">
+    <img src="{{ site.baseurl }}/img/suspected-memory-leakage/suspected-memory-leakage-4.png" alt="suspected memory leakage">
 </a>
-<span class="caption text-muted">To go places and do things that have never been done before – that’s what living is all about.</span>
 
-<p>Space, the final frontier. These are the voyages of the Starship Enterprise. Its five-year mission: to explore strange new worlds, to seek out new life and new civilizations, to boldly go where no man has gone before.</p>
+<a href="#">
+    <img src="{{ site.baseurl }}/img/suspected-memory-leakage/suspected-memory-leakage-5.png" alt="suspected memory leakage">
+</a>
 
-<p>As I stand out here in the wonders of the unknown at Hadley, I sort of realize there’s a fundamental truth to our nature, Man must explore, and this is exploration at its greatest.</p>
+<a href="#">
+    <img src="{{ site.baseurl }}/img/suspected-memory-leakage/suspected-memory-leakage-6.png" alt="suspected memory leakage">
+</a>
 
-<p>Placeholder text by <a href="http://spaceipsum.com/">Space Ipsum</a>. Photographs by <a href="https://www.flickr.com/photos/nasacommons/">NASA on The Commons</a>.</p>
+<p>As default setting doesn’t schedule ServerTimerTask1, so I suspect rspConnections still retained the reference to HttpConnection.</p>
+
+<p>So why not to give it a trial?</p>
+
+<p>As we can see from code above, "com.sun.net.httpserver" is used as the logger name. So which naturally lead me to “how to enable java.util.logging.Logger?”.</p>
+
+<h2 class="section-heading">How to enable java.util.logging.Logger</h2>
+
+<p>By default, java.util.logging.Logger would use jre/lib/logging.properties as the configuration file, which can also be changed via -Djava.util.logging.config.file=<path></p>
+
+[root@vsp0047vm8 ~]# ps -ef | grep 'keyword' | grep 'java.util.logging.config.file' --color
+user   48908     1  3 05:24 ?        00:07:28 /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java -server ... -Djava.util.logging.config.file=/opt/xx/conf/logging.properties -Dsun.net.httpserver.debug=true -Dsun.net.httpserver.maxReqTime=60 -Dsun.net.httpserver.maxRspTime=60
+
+<p>Edit /opt/xx/conf/logging.properties to add FileHandler</p>
+handlers=java.util.logging.FileHandler
+com.sun.net.httpserver.level = FINEST
+java.util.logging.FileHandler.pattern = /var/log/xx/henry-%g.log
+java.util.logging.FileHandler.limit = 50000
+java.util.logging.FileHandler.count = 1
+java.util.logging.FileHandler.formatter = java.util.logging.SimpleFormatter
+
+<p>Restart service and check log</p>
+[root@vsp0047vm8 nbi3gc]# tail -n 5 /var/log/xx/henry-0.log
+FINE: GET /NotificationSender/NotificationSenderService?wsdl=1 HTTP/1.1 [200  OK] ()
+Nov 11, 2016 8:46:38 AM sun.net.httpserver.ServerImpl$ServerTimerTask1 run
+FINE: closing: no response: java.nio.channels.SocketChannel[closed]
+Nov 11, 2016 8:46:38 AM sun.net.httpserver.ServerImpl$ServerTimerTask1 run
+FINE: closing: no response: java.nio.channels.SocketChannel[closed]
+
+<h2 class="section-heading">Memory footprint before vs after tuning</h2>
+<p>Before</p>
+<a href="#">
+    <img src="{{ site.baseurl }}/img/suspected-memory-leakage/suspected-memory-leakage-1.png" alt="suspected memory leakage">
+</a>
+<p>After</p>
+<a href="#">
+    <img src="{{ site.baseurl }}/img/suspected-memory-leakage/suspected-memory-leakage-7.png" alt="suspected memory leakage">
+</a>
+<p>Before</p>
+<a href="#">
+    <img src="{{ site.baseurl }}/img/suspected-memory-leakage/suspected-memory-leakage-9.png" alt="suspected memory leakage">
+</a>
+<p>After</p>
+<a href="#">
+    <img src="{{ site.baseurl }}/img/suspected-memory-leakage/suspected-memory-leakage-8.png" alt="suspected memory leakage">
+</a>
+
+<h2 class="section-heading">Take away</h2>
+<p>When interoperating with outside system, timeout and retry mechanism should be implemented (or at least be taken into consideration) on the client side.</p>
+<p>When providing webservice via jdk’s build-in @WebService, parameters can be tuned were listed below. The red one should/must be tuned.</p>
+sun.net.httpserver.idleInterval
+sun.net.httpserver.clockTick
+sun.net.httpserver.maxIdleConnections
+sun.net.httpserver.drainAmount
+sun.net.httpserver.maxReqHeaders
+sun.net.httpserver.maxReqTime
+sun.net.httpserver.maxRspTime
+sun.net.httpserver.timerMillis
+sun.net.httpserver.debug
+sun.net.httpserver.nodelay
+
+<p>This is effective to jdk1.8, parameters may change as jdk evolve.</p>
