@@ -49,3 +49,6 @@ header-img: "img/post-bg-05.jpg"
 <a href="#">
     <img src="{{ site.baseurl }}/img/install-ubuntu-in-virtualbox-on-win7-host/edit-maven-setting.png" alt="edit-maven-setting">
 </a>
+<a href="#">
+    <img src="{{ site.baseurl }}/img/install-ubuntu-in-virtualbox-on-win7-host/enable-auto-mount-on-start-result.png" alt="enable-auto-mount-on-start-result">
+</a>
